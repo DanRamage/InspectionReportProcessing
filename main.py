@@ -10,6 +10,16 @@ import dateutil.parser as dparser
 from pathlib import Path
 from mako import template, exceptions as makoExceptions
 import traceback
+
+from reddit_output import reddit_output
+SC_COUNTIES = {
+    "22": "Georgetown",
+    "26": "Horry",
+    "32": "Lexington",
+    "40": "Richland",
+
+}
+'''
 SC_COUNTIES = {
     "01": "Abbeville",
     "02": "Aiken",
@@ -58,7 +68,7 @@ SC_COUNTIES = {
     "45": "Williamsburg",
     "46": "York"
 }
-
+'''
 pdf_url_template = Template("http://pubdoc.dhec.sc.gov/inspection/$pdf_id.pdf")
 
 
@@ -137,6 +147,12 @@ def output_report(template_file: Path,
 
     return
 
+def post_reddit_results(ini_file: Path, county_name: str, inspection_date: datetime, output_file: Path):
+    #(self, county: str, inspection_date: datetime, report_file: Path):
+    reddit_obj = reddit_output(ini_file=ini_file, county_name=county_name)
+    reddit_obj.post(county_name, inspection_date, output_file)
+    return
+
 def main():
     parser = optparse.OptionParser(usage="usage: %prog [options] argument")
 
@@ -148,6 +164,8 @@ def main():
                       help="Mako templates to use for the markdown files")
     parser.add_option( "--HTMLTemplateFile", dest="html_template_file",
                       help="Mako templates to use for the HTML files")
+    parser.add_option( "--RedditSettingsINI", dest="reddit_settings_ini", default="reddit_settings.ini",
+                      help="INI file containing the Reddit settings.")
 
     # 5. Parse the command-line arguments
     (options, args) = parser.parse_args()
@@ -177,9 +195,9 @@ def main():
         # Print the number of matching features found
         print(f"Matching features found: {len(output_results)}")
 
-        results_outfile = output_directory / f"{county_name}_{start_date.strftime("%Y-%m-%d")}_{now_date.strftime("%Y-%m-%d")}.md"
+        markdown_results_outfile = output_directory / f"{county_name}_{start_date.strftime("%Y-%m-%d")}_{now_date.strftime("%Y-%m-%d")}.md"
         output_report(template_file=options.markdown_template_file,
-                      output_file_name=results_outfile,
+                      output_file_name=markdown_results_outfile,
                       county_name=county_name,
                       start_date=start_date,
                       end_date=now_date,
@@ -193,6 +211,10 @@ def main():
                       end_date=now_date,
                       output_results=output_results
                       )
+        post_reddit_results(ini_file=Path(options.reddit_settings_ini),
+                            county_name=county_name,
+                            inspection_date=now_date,
+                            output_file=markdown_results_outfile)
         '''
         try:
             mytemplate = template.Template(filename=options.markdown_template_file)
