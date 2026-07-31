@@ -10,6 +10,7 @@ import dateutil.parser as dparser
 from pathlib import Path
 from mako import template, exceptions as makoExceptions
 import traceback
+import logging.config
 
 from reddit_output import reddit_output
 SC_COUNTIES = {
@@ -127,10 +128,11 @@ def output_report(template_file: Path,
                   start_date: datetime,
                   end_date: datetime,
                   output_results: List[Any]):
+    logger = logging.getLogger()
     try:
-        print(f"Using template file: {template_file}")
+        logger.info(f"Using template file: {template_file}")
         mytemplate = template.Template(filename=template_file)
-        print(f"Writing to {output_file_name}")
+        logger.info(f"Writing to {output_file_name}")
         with open(str(output_file_name), "w") as result_file_obj:
             results_report = mytemplate.render(county_name=county_name,
                                                start_date=start_date.strftime("%Y-%m-%d"),
@@ -140,10 +142,10 @@ def output_report(template_file: Path,
                                                format_report_url=format_report_url)
             result_file_obj.write(results_report)
     except TypeError as e:
-        print(makoExceptions.text_error_template().render())
+        logger.error(makoExceptions.text_error_template().render())
 
     except (IOError, AttributeError, Exception) as e:
-        traceback.print_exc()
+        logger.exception(e)
 
     return
 
@@ -164,11 +166,16 @@ def main():
                       help="Mako templates to use for the markdown files")
     parser.add_option( "--HTMLTemplateFile", dest="html_template_file",
                       help="Mako templates to use for the HTML files")
+    parser.add_option( "--LoggingConfig", dest="logging_config",
+                      help="Logging conf file.")
     parser.add_option( "--RedditSettingsINI", dest="reddit_settings_ini", default="reddit_settings.ini",
                       help="INI file containing the Reddit settings.")
 
-    # 5. Parse the command-line arguments
     (options, args) = parser.parse_args()
+
+    logging.config.fileConfig(options.logging_config)
+    logger = logging.getLogger(__name__)
+    logger.info("Log file opened.")
 
     output_directory = Path(options.output_directory)
     output_directory.mkdir(parents=True, exist_ok=True)
@@ -190,10 +197,10 @@ def main():
     # Create a spatial filter using intersects (or contains/within)
     query_filter = intersects(query_extent, sr=102100)
     for county_code, county_name in SC_COUNTIES.items():
-        print(f"Querying: {county_code} {county_name}")
+        logger.info(f"Querying: {county_code} {county_name}")
         output_results = query_endpoint(county_code=county_code, start_date=start_date)
         # Print the number of matching features found
-        print(f"Matching features found: {len(output_results)}")
+        logger.info(f"Matching features found: {len(output_results)}")
 
         markdown_results_outfile = output_directory / f"{county_name}_{start_date.strftime("%Y-%m-%d")}_{now_date.strftime("%Y-%m-%d")}.md"
         output_report(template_file=options.markdown_template_file,
@@ -215,35 +222,6 @@ def main():
                             county_name=county_name,
                             inspection_date=now_date,
                             output_file=markdown_results_outfile)
-        '''
-        try:
-            mytemplate = template.Template(filename=options.markdown_template_file)
-            with open(results_outfile, "w") as result_file_obj:
-                results_report = mytemplate.render(county_name=county_name,
-                                                   start_date=start_date.strftime("%Y-%m-%d"),
-                                                   end_date=now_date.strftime("%Y-%m-%d"),
-                                                   features=output_results,
-                                                   format_inspection_date=format_inspection_date,
-                                                   format_report_url=format_report_url)
-                result_file_obj.write(results_report)
-
-            results_outfile = output_directory / f"{county_name}_{start_date.strftime("%Y-%m-%d")}_{now_date.strftime("%Y-%m-%d")}.html"
-            mytemplate = template.Template(filename=options.html_template_file)
-            with open(results_outfile, "w") as result_file_obj:
-                results_report = mytemplate.render(county_name=county_name,
-                                                   start_date=start_date.strftime("%Y-%m-%d"),
-                                                   end_date=now_date.strftime("%Y-%m-%d"),
-                                                   features=output_results,
-                                                   format_inspection_date=format_inspection_date,
-                                                   format_report_url=format_report_url)
-                result_file_obj.write(results_report)
-
-        except TypeError as e:
-            print(makoExceptions.text_error_template().render())
-
-        except (IOError, AttributeError, Exception) as e:
-            traceback.print_exc()
-        '''
 
 
 if __name__ == "__main__":

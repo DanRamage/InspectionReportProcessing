@@ -6,5 +6,7 @@ python3 main.py --LookBackDays=30 \
 --OutputDirectory=/var/www/RestaurantRatingScraper/results \
 --MarkdownTemplateFile=report_card_template.mako \
 --HTMLTemplateFile=html_report_card_template.mako \
+--RedditSettingsINI=reddit_output_settings.ini \
+--LoggingConfig=inspection_processing.conf \
 
-source ./venv/bin/activate deactivate
+source .venv/bin/activate deactivate
