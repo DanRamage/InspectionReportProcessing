@@ -19,6 +19,7 @@ class reddit_output:
             self.useragent = config_file.get("reddit_output_settings", "password")
             #Get the county specific settings
             self.subreddits = config_file.get(county_name, "subreddits", fallback=None)
+            self.flair_text = config_file.get(county_name, "flair_text", fallback=None)
             if self.subreddits is not None:
                 self.subreddits = self.subreddits.split(',')
             self.logger.info(
@@ -43,7 +44,19 @@ class reddit_output:
                     for sub in self.subreddits:
                         self.logger.info(f"Submitting to subreddit: {sub}")
                         subreddit = reddit.subreddit(sub)
-                        subreddit.submit(title, selftext=output_text)
+                        flair_id = None
+                        if self.flair_text is not None:
+                            for template in subreddit.flair.link_templates:
+                                if template["text"].strip() == self.flair_text:
+                                    flair_id = template["id"]
+                                    flair_text = template["text"]
+                                    break
+                            if flair_id:
+                                subreddit.submit(title, selftext=output_text, flair_id=flair_id, flair_text=flair_text)
+                            else:
+                                self.logger.error(f"No flair template: {self.flair_text} found for subreddit: {sub}")
+                        else:
+                            subreddit.submit(title, selftext=output_text)
 
             except Exception as e:
                 self.logger.exception(e)
