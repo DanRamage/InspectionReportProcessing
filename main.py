@@ -14,11 +14,11 @@ import logging.config
 
 from reddit_output import reddit_output
 SC_COUNTIES = {
-    #"22": "Georgetown",
-    #"26": "Horry",
+    "22": "Georgetown",
+    "26": "Horry",
     "32": "Lexington",
     "40": "Richland",
-    #"23": "Greenville",
+    "23": "Greenville",
 
 }
 '''
