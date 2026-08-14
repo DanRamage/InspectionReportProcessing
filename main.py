@@ -14,10 +14,11 @@ import logging.config
 
 from reddit_output import reddit_output
 SC_COUNTIES = {
-    "22": "Georgetown",
-    "26": "Horry",
+    #"22": "Georgetown",
+    #"26": "Horry",
     "32": "Lexington",
     "40": "Richland",
+    #"23": "Greenville",
 
 }
 '''
@@ -218,6 +219,7 @@ def main():
                       end_date=now_date,
                       output_results=output_results
                       )
+
         post_reddit_results(ini_file=Path(options.reddit_settings_ini),
                             county_name=county_name,
                             inspection_date=now_date,

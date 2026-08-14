@@ -45,7 +45,7 @@ class reddit_output:
                         self.logger.info(f"Submitting to subreddit: {sub}")
                         subreddit = reddit.subreddit(sub)
                         flair_id = None
-                        if self.flair_text is not None:
+                        if self.flair_text is not None and len(self.flair_text) > 0:
                             for template in subreddit.flair.link_templates:
                                 if template["text"].strip() == self.flair_text:
                                     flair_id = template["id"]
