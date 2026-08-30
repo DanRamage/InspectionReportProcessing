@@ -14,11 +14,13 @@ import logging.config
 
 from reddit_output import reddit_output
 SC_COUNTIES = {
+    "10": "Charleston",
     "22": "Georgetown",
     "26": "Horry",
     "32": "Lexington",
     "40": "Richland",
     "23": "Greenville",
+    "42": "Spartanburg",
 
 }
 '''
@@ -101,6 +103,8 @@ def query_endpoint(county_code: str, start_date: datetime) -> List[Any]:
     facilities = {}
     for feature in results.features:
         permit_id = feature.attributes['PERMIT_ID']
+        if permit_id == '42-206-06845':
+            permit_id
         posted_grade = feature.attributes['POSTED_GRADE'].strip()
         #What we're looking to do is get all non A inspections, but we want to show A's for
         #facilities that had a followup that was an A. In other words we want to make sure if a

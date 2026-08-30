@@ -3,9 +3,10 @@
 
 # County: ${county_name}
 **Report dates from ${start_date} to ${end_date}**
+
 **Only inspections that are not an A are shown, unless there was a non A inspection and follow-up was an A**
 
-**Data was sourced from the South Carolina Department of Agriculture [here](https://apps.dhec.sc.gov/Environment/FoodGrades/)**
+**Data was sourced from the South Carolina Department of Agriculture [here](https://dataviz.dph.sc.gov/foodgrades/)**
 
 % for feature in features:
 ${"##"} ${feature.attributes['FACILITY']}

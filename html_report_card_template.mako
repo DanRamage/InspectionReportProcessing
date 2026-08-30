@@ -20,7 +20,7 @@
             <b>Only inspections that are not an A are shown, unless there was a non A inspection and follow-up was an A.</b>
         </p>
         <p>
-          <b>Data was sourced from the South Carolina Department of Agriculture <a href='https://apps.dhec.sc.gov/Environment/FoodGrades/'>here</a>.</b>
+          <b>Data was sourced from the South Carolina Department of Agriculture <a href='https://dataviz.dph.sc.gov/foodgrades/'>here</a>.</b>
         </p>
     </div>
 </section>
