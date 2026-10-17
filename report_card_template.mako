@@ -12,7 +12,6 @@
 ${"##"} ${feature.attributes['FACILITY']}
 * Posted Grade: ${feature.attributes['POSTED_GRADE'].strip()} on ${format_inspection_date(feature.attributes['INSP_DATE'])}
 * Inspection Type: ${feature.attributes['AC_CODE']} [Report](${format_report_url(feature.attributes['AuditResultGlobalID'])})
-* Active: ${feature.attributes['Active']}
 * Address: ${feature.attributes['ADDRESS']} ${feature.attributes['CITY']}, ${feature.attributes['STATE']}
 
 % endfor

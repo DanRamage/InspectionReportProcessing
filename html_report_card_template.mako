@@ -35,7 +35,6 @@
                   </li>
                   <li>Inspection Type: ${feature.attributes['AC_CODE']} <a
                           href=${format_report_url(feature.attributes['AuditResultGlobalID'])}> Report</a></li>
-                  <li>Active: ${feature.attributes['Active']}</li>
                   <li>Address: ${feature.attributes['ADDRESS']} ${feature.attributes['CITY']},
                       ${feature.attributes['STATE']}
                   </li>
